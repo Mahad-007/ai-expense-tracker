@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useNavigation } from "@/components/context/NavigationContext";
 import { 
   CreditCard, 
   BarChart3, 
@@ -25,62 +26,77 @@ interface SidebarProps {
 }
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
-  const [activeItem, setActiveItem] = useState("expenses");
+  const { currentView, setCurrentView } = useNavigation();
 
   const navigationItems = [
     { 
-      id: "expenses", 
+      id: "dashboard" as const, 
+      label: "Dashboard", 
+      icon: PieChart,
+      description: "Overview & summary",
+      color: "text-blue-500",
+      bgColor: "bg-blue-50 dark:bg-blue-950/20",
+      emoji: "📊"
+    },
+    { 
+      id: "expenses" as const, 
       label: "Expenses", 
       icon: CreditCard,
       description: "Track your spending",
       color: "text-red-500",
       bgColor: "bg-red-50 dark:bg-red-950/20",
-      count: 12
+      count: 12,
+      emoji: "💸"
     },
     { 
-      id: "analytics", 
+      id: "analytics" as const, 
       label: "Analytics", 
       icon: BarChart3,
       description: "View insights & reports",
       color: "text-blue-500",
       bgColor: "bg-blue-50 dark:bg-blue-950/20",
-      trend: "+12%"
+      trend: "+12%",
+      emoji: "📈"
     },
     { 
-      id: "transactions", 
+      id: "transactions" as const, 
       label: "Transactions", 
       icon: ArrowRightLeft,
       description: "All payment history",
       color: "text-green-500",
       bgColor: "bg-green-50 dark:bg-green-950/20",
-      count: 347
+      count: 347,
+      emoji: "💳"
     },
     { 
-      id: "goals", 
+      id: "goals" as const, 
       label: "Goals", 
       icon: Target,
       description: "Financial targets",
       color: "text-purple-500",
       bgColor: "bg-purple-50 dark:bg-purple-950/20",
-      progress: "67%"
+      progress: "67%",
+      emoji: "🎯"
     },
     { 
-      id: "limits", 
+      id: "limits" as const, 
       label: "Limits", 
       icon: AlertTriangle,
       description: "Spending boundaries",
       color: "text-orange-500",
       bgColor: "bg-orange-50 dark:bg-orange-950/20",
-      warning: true
+      warning: true,
+      emoji: "⚠️"
     },
     { 
-      id: "ai-analysis", 
+      id: "ai-analysis" as const, 
       label: "AI Analysis", 
       icon: Brain,
       description: "Smart recommendations",
       color: "text-indigo-500",
       bgColor: "bg-indigo-50 dark:bg-indigo-950/20",
-      badge: "NEW"
+      badge: "NEW",
+      emoji: "🤖"
     },
   ];
 
@@ -147,7 +163,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             <nav className="space-y-2">
               {navigationItems.map((item) => {
                 const Icon = item.icon;
-                const isActive = activeItem === item.id;
+                const isActive = currentView === item.id;
                 
                 return (
                   <Button
@@ -158,7 +174,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                       isActive && "bg-primary/10 border border-primary/20 shadow-sm"
                     )}
                     onClick={() => {
-                      setActiveItem(item.id);
+                      setCurrentView(item.id);
                       // On mobile, close sidebar after selection
                       if (window.innerWidth < 1024) {
                         onClose();
@@ -167,14 +183,18 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                   >
                     <div className="flex items-center space-x-4 w-full">
                       <div className={cn(
-                        "p-2 rounded-lg transition-all duration-200",
+                        "p-2 rounded-lg transition-all duration-200 flex items-center justify-center",
                         isActive ? item.bgColor : "bg-muted/50 group-hover:bg-muted",
                         "group-hover:scale-110"
                       )}>
-                        <Icon className={cn(
-                          "w-5 h-5 transition-colors duration-200",
-                          isActive ? item.color : "text-muted-foreground group-hover:text-foreground"
-                        )} />
+                        {item.emoji ? (
+                          <span className="text-lg">{item.emoji}</span>
+                        ) : (
+                          <Icon className={cn(
+                            "w-5 h-5 transition-colors duration-200",
+                            isActive ? item.color : "text-muted-foreground group-hover:text-foreground"
+                          )} />
+                        )}
                       </div>
                       
                       <div className="flex-1 min-w-0">
